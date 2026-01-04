@@ -28,6 +28,15 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'role' => fake()->randomElement(['user', 'user', 'user', 'editor']), // Más users que editors
+            'avatar' => null, // Se puede generar con https://ui-avatars.com/api/?name=
+            'bio' => fake()->optional(0.7)->sentence(20),
+            'website' => fake()->optional(0.3)->url(),
+            'twitter' => fake()->optional(0.4)->userName(),
+            'facebook' => fake()->optional(0.3)->userName(),
+            'instagram' => fake()->optional(0.4)->userName(),
+            'is_active' => true,
+            'last_login_at' => fake()->optional(0.8)->dateTimeBetween('-30 days', 'now'),
             'remember_token' => Str::random(10),
         ];
     }

@@ -1,11 +1,101 @@
-@import 'tailwindcss';
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+@import "tailwindcss";
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    /* Tipografía */
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-serif: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
+
+    /* Paleta Modos */
+    --color-paper: #f9f9f9;
+    --color-ink: #111111;
+
+    --color-paper-dark: #0f0f10;
+    /* Negro matizado para dark mode */
+    --color-ink-dark: #e5e5e5;
+
+    --color-brand-600: #2563eb;
+    --color-brand-500: #3b82f6;
+}
+
+@layer utilities {
+    .font-serif {
+        font-family: var(--font-serif);
+    }
+
+    /* Animación de enlace premium (subrayado que crece) */
+    .link-underline {
+        position: relative;
+        text-decoration: none;
+    }
+
+    .link-underline::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 1px;
+        bottom: 0;
+        left: 0;
+        background-color: currentColor;
+        transform-origin: bottom right;
+        transition: transform 0.25s ease-out;
+    }
+
+    .link-underline:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+    }
+
+    /* Zoom suave en imágenes */
+    .img-zoom {
+        transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .group:hover .img-zoom {
+        transform: scale(1.05);
+        /* Zoom sutil */
+    }
+
+    /* Texto balanceado para titulares */
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+
+/* Dark Mode Overrides */
+.dark body {
+    background-color: var(--color-paper-dark);
+    color: var(--color-ink-dark);
+}
+
+.dark .text-ink {
+    color: var(--color-ink-dark);
+}
+
+.dark .bg-paper {
+    background-color: var(--color-paper-dark);
+}
+
+.dark .border-black {
+    border-color: var(--color-ink-dark);
+}
+
+.dark header h1 {
+    color: var(--color-ink-dark);
+}
+
+.dark header p {
+    color: #9ca3af;
+}
+
+.dark nav a {
+    color: #d1d5db;
+}
+
+.dark nav a:hover {
+    color: var(--color-brand-500);
+}
+
+.dark footer {
+    border-top-color: var(--color-brand-500);
 }
