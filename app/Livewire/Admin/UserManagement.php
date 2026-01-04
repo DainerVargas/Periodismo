@@ -5,7 +5,6 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\User;
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,7 +14,7 @@ class UserManagement extends Component
 
     public $search = '';
     public $showModal = false;
-    
+
     // Form fields
     public $userId;
     public $name;
@@ -24,6 +23,13 @@ class UserManagement extends Component
     public $password_confirmation;
     public $role = 'user';
     public $permissions = [];
+
+    // Available permissions
+    public $availablePermissions = [
+        'manage_users' => 'Gestionar Usuarios',
+        'manage_categories' => 'Gestionar Categorías',
+        'manage_articles' => 'Gestionar Noticias',
+    ];
 
     public function mount()
     {
@@ -40,17 +46,12 @@ class UserManagement extends Component
         $this->showModal = true;
     }
 
-    // Available permissions
-    public $availablePermissions = [
-        'manage_users' => 'Gestionar Usuarios',
-        'manage_categories' => 'Gestionar Categorías',
-        'manage_articles' => 'Gestionar Noticias',
-    ];
-
     public function render()
     {
-        $users = User::where('name', 'like', "%{$this->search}%")
-            ->orWhere('email', 'like', "%{$this->search}%")
+        $users = User::where(function ($query) {
+            $query->where('name', 'like', "%{$this->search}%")
+                ->orWhere('email', 'like', "%{$this->search}%");
+        })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -103,9 +104,9 @@ class UserManagement extends Component
         }
 
         $this->showModal = false;
-        $this->dispatch('saved'); 
+        $this->dispatch('saved');
     }
-    
+
     public function togglePermission($permission)
     {
         if (in_array($permission, $this->permissions)) {
@@ -113,5 +114,10 @@ class UserManagement extends Component
         } else {
             $this->permissions[] = $permission;
         }
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
     }
 }

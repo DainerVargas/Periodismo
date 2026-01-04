@@ -5,7 +5,7 @@
             <h2 class="text-2xl font-serif font-bold text-gray-900 dark:text-white">Categorías del Periódico</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400">Organiza tus noticias por temas y define sus estilos visuales.</p>
         </div>
-        <button wire:click="openModal" class="inline-flex items-center gap-2 bg-brand-600 text-white font-bold text-xs px-6 py-3 rounded-sm hover:opacity-90 transition-all uppercase tracking-widest shadow-lg">
+        <button wire:click="openModal" class="inline-flex items-center gap-2 bg-black text-white font-bold text-xs px-6 py-3 rounded-sm hover:opacity-90 transition-all uppercase tracking-widest shadow-lg">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             Nueva Categoría
         </button>

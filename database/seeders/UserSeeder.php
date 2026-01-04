@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
             'role' => 'admin',
+            'permissions' => ['manage_users', 'manage_categories', 'manage_articles'],
             'bio' => 'Administrador principal del sistema',
             'is_active' => true,
             'created_at' => now(),
