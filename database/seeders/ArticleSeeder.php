@@ -18,16 +18,18 @@ class ArticleSeeder extends Seeder
         if ($categories->isEmpty()) return;
 
         foreach ($categories as $category) {
-            Article::create([
-                'title' => "Noticia de prueba en {$category->name}",
-                'slug' => Str::slug("Noticia de prueba en {$category->name}"),
-                'excerpt' => "Este es un breve resumen de lo que está sucediendo en la sección de {$category->name}.",
-                'content' => "Contenido extenso de una noticia de prueba para demostrar el funcionamiento del sistema editorial.",
-                'category_id' => $category->id,
-                'user_id' => $admin->id,
-                'status' => 'published',
-                'published_at' => now(),
-            ]);
+            for ($i = 1; $i <= 5; $i++) {
+                Article::create([
+                    'title' => "Noticia {$i} de {$category->name}: Impacto e Importancia",
+                    'slug' => Str::slug("Noticia {$i} de {$category->name} " . Str::random(5)),
+                    'excerpt' => "Este es el resumen de la noticia número {$i} en la categoría de {$category->name}. Analizamos los puntos clave.",
+                    'content' => "Contenido completo sobre {$category->name}. El desarrollo de esta noticia permite entender mejor los cambios que se están produciendo en esta área. " . str_repeat("Lorem ipsum dolor sit amet, consectetur adipiscing elit. ", 5),
+                    'category_id' => $category->id,
+                    'user_id' => $admin->id,
+                    'status' => 'published',
+                    'published_at' => now()->subHours(rand(1, 48)),
+                ]);
+            }
         }
     }
 }

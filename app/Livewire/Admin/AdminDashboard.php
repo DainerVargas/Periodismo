@@ -22,6 +22,10 @@ class AdminDashboard extends Component
             $this->currentTab = 'categories';
         } elseif ($user->hasPermission('manage_articles')) {
             $this->currentTab = 'articles';
+        } elseif ($user->hasPermission('manage_opinions')) {
+            $this->currentTab = 'opinions';
+        } elseif ($user->hasPermission('manage_tags')) {
+            $this->currentTab = 'tags';
         } else {
             $this->currentTab = 'roles';
         }

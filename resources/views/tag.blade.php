@@ -4,16 +4,13 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div class="border-b-4 border-black dark:border-white pb-6 mb-12">
             <div class="flex items-center gap-4 mb-2">
-                <span class="w-12 h-1 bg-brand-600" style="background-color: {{ $category->color }}"></span>
-                <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Sección</span>
+                <span class="w-12 h-1 bg-gray-400"></span>
+                <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Archivos por Etiqueta</span>
             </div>
             <h1
                 class="font-serif text-5xl sm:text-7xl font-black tracking-tighter text-gray-900 dark:text-white uppercase leading-none">
-                {{ $category->name }}
+                #{{ $tag->name }}
             </h1>
-            @if ($category->description)
-                <p class="mt-4 text-xl text-gray-600 dark:text-gray-400 font-serif italic">{{ $category->description }}</p>
-            @endif
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -31,6 +28,10 @@
                             @endif
                         </div>
                         <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="text-[10px] font-bold uppercase tracking-widest text-brand-600">{{ $article->category->name }}</span>
+                            </div>
                             <h2
                                 class="font-serif text-3xl font-bold leading-tight dark:text-gray-100 group-hover:text-brand-600 transition-colors">
                                 <a href="{{ route('articles.show', $article->slug) }}">
@@ -51,8 +52,8 @@
                 @empty
                     <div
                         class="p-20 bg-gray-50 dark:bg-gray-900 text-center rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-800">
-                        <p class="text-gray-400 font-serif italic text-lg text-balance">No hemos encontrado artículos en
-                            esta sección todavía. Vuelve pronto para las últimas noticias.</p>
+                        <p class="text-gray-400 font-serif italic text-lg text-balance">No hemos encontrado artículos con
+                            esta etiqueta todavía.</p>
                     </div>
                 @endforelse
 
@@ -65,12 +66,12 @@
                 <div>
                     <h3
                         class="font-bold text-xs uppercase tracking-widest mb-6 py-2 border-y border-black dark:border-white">
-                        Otras Secciones</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        @foreach (App\Models\Category::where('id', '!=', $category->id)->get() as $other)
-                            <a href="{{ route('category.show', $other->slug) }}"
-                                class="px-3 py-2 bg-gray-50 dark:bg-gray-900 text-[10px] font-bold uppercase tracking-widest hover:bg-brand-600 hover:text-white transition-colors text-center rounded-sm">
-                                {{ $other->name }}
+                        Etiquetas Populares</h3>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (App\Models\Tag::where('is_active', true)->where('id', '!=', $tag->id)->take(15)->get() as $other)
+                            <a href="{{ route('tags.show', $other->slug) }}"
+                                class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-[9px] font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors rounded-full">
+                                #{{ $other->name }}
                             </a>
                         @endforeach
                     </div>

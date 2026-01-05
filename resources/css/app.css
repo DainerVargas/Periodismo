@@ -2,8 +2,9 @@
 
 @theme {
     /* Tipografía */
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-serif: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+    --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times,
+        serif;
 
     /* Paleta Modos */
     --color-paper: #f9f9f9;
@@ -29,7 +30,7 @@
     }
 
     .link-underline::after {
-        content: '';
+        content: "";
         position: absolute;
         width: 100%;
         transform: scaleX(0);
@@ -59,6 +60,15 @@
     /* Texto balanceado para titulares */
     .text-balance {
         text-wrap: balance;
+    }
+
+    /* Navbar scroll styling */
+    nav .overflow-x-auto {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+    nav .overflow-x-auto::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
     }
 }
 

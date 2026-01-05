@@ -121,25 +121,19 @@
             class="mt-6 border-t border-b border-gray-200 dark:border-gray-800 py-3 sticky top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur z-40">
             <div class="mx-auto max-w-7xl px-4 overflow-x-auto">
                 <ul
-                    class="flex justify-center flex-wrap gap-x-8 gap-y-2 text-sm font-bold uppercase tracking-wide whitespace-nowrap">
+                    class="flex justify-center items-center gap-x-8 gap-y-2 text-sm font-bold uppercase tracking-wide whitespace-nowrap min-w-max mx-auto px-4">
                     <li><a href="/"
                             class="text-black dark:text-white hover:text-brand-600 transition-colors link-underline pb-0.5">Portada</a>
                     </li>
-                    <li><a href="{{ route('category.show', 'politica') }}"
-                            class="text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors link-underline pb-0.5">Política</a>
-                    </li>
-                    <li><a href="{{ route('category.show', 'tecnologia') }}"
-                            class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors link-underline pb-0.5">Tecnología</a>
-                    </li>
-                    <li><a href="{{ route('category.show', 'economia') }}"
-                            class="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors link-underline pb-0.5">Economía</a>
-                    </li>
-                    <li><a href="{{ route('category.show', 'opinion') }}"
-                            class="text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors link-underline pb-0.5">Opinión</a>
-                    </li>
-                    <li><a href="{{ route('category.show', 'cultura') }}"
-                            class="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors link-underline pb-0.5">Cultura</a>
-                    </li>
+                    @foreach ($globalCategories as $category)
+                        <li>
+                            <a href="{{ route('category.show', $category->slug) }}"
+                                class="text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors link-underline pb-0.5"
+                                style="--hover-color: {{ $category->color }}">
+                                {{ $category->name }}
+                            </a>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
         </nav>
