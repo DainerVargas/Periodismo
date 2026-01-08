@@ -6,7 +6,9 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Opinion;
+use App\Models\AuditLog;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class OpinionManagement extends Component
 {
@@ -19,6 +21,7 @@ class OpinionManagement extends Component
     public $opinionId;
     public $author;
     public $title;
+    public $slug;
     public $content;
     public $image; // Temporal upload
     public $existing_image;
@@ -26,6 +29,7 @@ class OpinionManagement extends Component
     protected $rules = [
         'author' => 'required|min:3|max:100',
         'title' => 'required|min:5|max:255',
+        'slug' => 'required|unique:opinions,slug',
         'content' => 'required|min:10',
         'image' => 'nullable|image|max:1024',
     ];
@@ -34,7 +38,7 @@ class OpinionManagement extends Component
     {
         /** @var \App\Models\User $user */
         $user = \Illuminate\Support\Facades\Auth::user();
-        if (!$user || !$user->hasPermission('manage_articles')) {
+        if (!$user || !$user->hasPermission('manage_opinions')) {
             abort(403);
         }
     }
@@ -53,7 +57,7 @@ class OpinionManagement extends Component
 
     public function openModal()
     {
-        $this->reset(['opinionId', 'author', 'title', 'content', 'image', 'existing_image']);
+        $this->reset(['opinionId', 'author', 'title', 'slug', 'content', 'image', 'existing_image']);
         $this->showModal = true;
     }
 
@@ -63,18 +67,35 @@ class OpinionManagement extends Component
         $this->opinionId = $opinion->id;
         $this->author = $opinion->author;
         $this->title = $opinion->title;
+        $this->slug = $opinion->slug;
         $this->content = $opinion->content;
         $this->existing_image = $opinion->image;
         $this->showModal = true;
     }
 
+    public function updatedTitle($value)
+    {
+        $this->slug = Str::slug($value);
+    }
+
     public function save()
     {
-        $this->validate();
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'user') {
+            return;
+        }
+
+        $rules = $this->rules;
+        if ($this->opinionId) {
+            $rules['slug'] = 'required|unique:opinions,slug,' . $this->opinionId;
+        }
+
+        $this->validate($rules);
+
 
         $data = [
             'author' => $this->author,
             'title' => $this->title,
+            'slug' => $this->slug,
             'content' => $this->content,
         ];
 
@@ -83,9 +104,12 @@ class OpinionManagement extends Component
         }
 
         if ($this->opinionId) {
-            Opinion::find($this->opinionId)->update($data);
+            $opinion = Opinion::find($this->opinionId);
+            $opinion->update($data);
+            AuditLog::log('update', $opinion, "Actualizó la columna de opinión: {$opinion->title}");
         } else {
-            Opinion::create($data);
+            $opinion = Opinion::create($data);
+            AuditLog::log('create', $opinion, "Creó una nueva columna de opinión: {$opinion->title}");
         }
 
         $this->showModal = false;
@@ -94,7 +118,15 @@ class OpinionManagement extends Component
 
     public function delete($id)
     {
-        Opinion::findOrFail($id)->delete();
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'user') {
+            return;
+        }
+
+        $opinion = Opinion::findOrFail($id);
+        $title = $opinion->title;
+        $opinion->delete();
+
+        AuditLog::log('delete', $opinion, "Eliminó la columna de opinión: {$title}");
         $this->dispatch('deleted');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Tag;
+use App\Models\AuditLog;
 use Illuminate\Support\Str;
 
 class TagManagement extends Component
@@ -30,7 +31,7 @@ class TagManagement extends Component
     {
         /** @var \App\Models\User $user */
         $user = \Illuminate\Support\Facades\Auth::user();
-        if (!$user || !$user->hasPermission('manage_articles')) {
+        if (!$user || !$user->hasPermission('manage_tags')) {
             abort(403);
         }
     }
@@ -69,7 +70,12 @@ class TagManagement extends Component
 
     public function save()
     {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'user') {
+            return;
+        }
+
         $rules = $this->rules;
+
         if ($this->tagId) {
             $rules['slug'] = 'required|unique:tags,slug,' . $this->tagId;
         }
@@ -83,9 +89,12 @@ class TagManagement extends Component
         ];
 
         if ($this->tagId) {
-            Tag::find($this->tagId)->update($data);
+            $tag = Tag::find($this->tagId);
+            $tag->update($data);
+            AuditLog::log('update', $tag, "Actualizó la etiqueta: {$tag->name}");
         } else {
-            Tag::create($data);
+            $tag = Tag::create($data);
+            AuditLog::log('create', $tag, "Creó la etiqueta: {$tag->name}");
         }
 
         $this->showModal = false;
@@ -94,14 +103,30 @@ class TagManagement extends Component
 
     public function delete($id)
     {
-        Tag::findOrFail($id)->delete();
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'user') {
+            return;
+        }
+
+        $tag = Tag::findOrFail($id);
+        $name = $tag->name;
+        $tag->delete();
+
+        AuditLog::log('delete', $tag, "Eliminó la etiqueta: {$name}");
         $this->dispatch('deleted');
     }
 
+
     public function toggleStatus($id)
     {
+        if (\Illuminate\Support\Facades\Auth::user()->role === 'user') {
+            return;
+        }
+
         $tag = Tag::findOrFail($id);
+
         $tag->is_active = !$tag->is_active;
         $tag->save();
+
+        AuditLog::log('update', $tag, ($tag->is_active ? 'Activó' : 'Desactivó') . " la etiqueta: {$tag->name}");
     }
 }

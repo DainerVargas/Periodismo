@@ -8,13 +8,15 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Gestiona los artículos de análisis y opinión de tus
                 colaboradores.</p>
         </div>
-        <button wire:click="openModal"
-            class="inline-flex items-center gap-2 bg-black text-white font-bold text-xs px-6 py-3 rounded-sm hover:opacity-90 transition-all uppercase tracking-widest shadow-lg">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Nueva Opinión
-        </button>
+        @if (auth()->user()->role !== 'user')
+            <button wire:click="openModal"
+                class="inline-flex items-center gap-2 bg-black text-white font-bold text-xs px-6 py-3 rounded-sm hover:opacity-90 transition-all uppercase tracking-widest shadow-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nueva Opinión
+            </button>
+        @endif
     </div>
 
     <!-- Lista de Opiniones -->
@@ -39,12 +41,18 @@
                             <h3 class="text-lg font-serif font-bold text-gray-900 dark:text-white leading-tight mt-1">
                                 {{ $opinion->title }}</h3>
                         </div>
-                        <div class="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button wire:click="edit({{ $opinion->id }})"
-                                class="text-[10px] font-bold text-gray-400 uppercase hover:text-brand-600">Editar</button>
-                            <button wire:click="delete({{ $opinion->id }})" wire:confirm="¿Borrar columna?"
-                                class="text-[10px] font-bold text-gray-400 uppercase hover:text-red-600">Eliminar</button>
-                        </div>
+                        @if (auth()->user()->role !== 'user')
+                            <div class="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button wire:click="edit({{ $opinion->id }})"
+                                    class="text-[10px] font-bold text-gray-400 uppercase hover:text-brand-600">Editar</button>
+                                <button wire:click="delete({{ $opinion->id }})" wire:confirm="¿Borrar columna?"
+                                    class="text-[10px] font-bold text-gray-400 uppercase hover:text-red-600">Eliminar</button>
+                            </div>
+                        @else
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Solo Lectura</span>
+                            </div>
+                        @endif
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2 italic">{{ $opinion->content }}
                     </p>
@@ -65,7 +73,15 @@
                 <div
                     class="relative bg-white dark:bg-gray-900 w-full max-w-2xl rounded-sm shadow-2xl border-t-4 border-black dark:border-white">
                     <div class="p-8">
-                        <h3 class="text-2xl font-serif font-bold mb-8 italic">Redactar Columna de Opinión</h3>
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-2xl font-serif font-bold italic">Redactar Columna de Opinión</h3>
+                            <button wire:click="$set('showModal', false)" class="text-gray-400 hover:text-gray-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                             <div class="space-y-6">
@@ -83,11 +99,19 @@
                                     <label
                                         class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Título
                                         del Artículo</label>
-                                    <input type="text" wire:model="title"
+                                    <input type="text" wire:model.live="title"
                                         class="w-full border-b-2 border-gray-100 dark:border-gray-800 bg-transparent text-sm p-2 focus:border-brand-600 transition-colors outline-none">
                                     @error('title')
                                         <span class="text-red-500 text-[10px] font-bold">{{ $message }}</span>
                                     @enderror
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Ruta
+                                        (Slug)</label>
+                                    <input type="text" wire:model="slug"
+                                        class="w-full border-b border-gray-100 dark:border-gray-800 bg-transparent text-[10px] p-2 text-gray-400 outline-none"
+                                        readonly>
                                 </div>
                             </div>
 

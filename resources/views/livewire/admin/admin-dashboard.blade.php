@@ -21,8 +21,10 @@
     <!-- Navegación de Pestañas -->
     <div
         class="flex items-center border-b-2 border-gray-50 dark:border-gray-800 mb-8 overflow-x-auto no-scrollbar scroll-smooth">
-        @foreach (['users' => 'Usuarios', 'categories' => 'Categorías', 'articles' => 'Noticias', 'opinions' => 'Opinión', 'tags' => 'Etiquetas', 'roles' => 'Estructura'] as $tab => $label)
-            @if (auth()->user()->hasPermission("manage_$tab") || $tab === 'roles')
+        @foreach (['users' => 'Usuarios', 'categories' => 'Categorías', 'articles' => 'Noticias', 'opinions' => 'Opinión', 'tags' => 'Etiquetas', 'audit' => 'Auditoría', 'roles' => 'Estructura'] as $tab => $label)
+            @if (auth()->user()->hasPermission("manage_$tab") ||
+                    $tab === 'roles' ||
+                    ($tab === 'audit' && auth()->user()->role === 'admin'))
                 <button wire:click="switchTab('{{ $tab }}')"
                     class="group relative py-4 px-6 text-[10px] font-black uppercase tracking-[0.2em] transition-all border-b-2 -mb-[2px] cursor-pointer {{ $currentTab === $tab ? 'text-brand-600 border-brand-600 bg-brand-50/5' : 'text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:border-gray-300' }}">
                     <div class="flex items-center gap-2">
@@ -55,6 +57,11 @@
                                     d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
                                 </path>
                             </svg>
+                        @elseif($tab === 'audit')
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
                         @else
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -81,6 +88,8 @@
             <livewire:admin.opinion-management wire:key="tab-comp-opinions" />
         @elseif($currentTab === 'tags' && auth()->user()->hasPermission('manage_tags'))
             <livewire:admin.tag-management wire:key="tab-comp-tags" />
+        @elseif($currentTab === 'audit' && auth()->user()->role === 'admin')
+            <livewire:admin.audit-log-management wire:key="tab-comp-audit" />
         @elseif($currentTab === 'roles')
             <div
                 class="animate-in fade-in slide-in-from-bottom-2 duration-500 bg-gray-50 dark:bg-gray-800/20 p-8 rounded-sm border border-gray-100 dark:border-gray-800">

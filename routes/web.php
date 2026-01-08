@@ -59,6 +59,25 @@ Route::get('/', function () {
 
     $opinions = Opinion::latest()->take(3)->get();
 
+    // Lógica para Lo Más Leído Hoy
+    $mostReadToday = Article::with(['category', 'author'])
+        ->where('status', 'published')
+        ->withCount(['views as todays_views' => function ($query) {
+            $query->whereDate('viewed_at', \Illuminate\Support\Carbon::today());
+        }])
+        ->orderByDesc('todays_views')
+        ->take(3)
+        ->get();
+
+    // Fallback a las más leídas históricamente si no hay vistas hoy
+    if ($mostReadToday->isEmpty() || $mostReadToday->first()->todays_views == 0) {
+        $mostReadToday = Article::with(['category', 'author'])
+            ->where('status', 'published')
+            ->orderByDesc('views_count')
+            ->take(3)
+            ->get();
+    }
+
     return view('welcome', compact(
         'opinions',
         'featuredArticle',
@@ -66,7 +85,8 @@ Route::get('/', function () {
         'politicaArticles',
         'tecnologiaArticles',
         'economiaArticles',
-        'culturaArticles'
+        'culturaArticles',
+        'mostReadToday'
     ));
 });
 
@@ -78,8 +98,19 @@ Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->na
 Route::post('/register', [RegisterController::class, 'register']);
 
 Route::get('/noticia/{article:slug}', function (Article $article) {
-    // Incrementar vistas
+    // Incrementar vistas totales (legacy/rápido)
     $article->increment('views_count');
+
+    // Registrar vista granular
+    \App\Models\ArticleView::create([
+        'article_id' => $article->id,
+        'user_id' => auth()->id(),
+        'ip_address' => request()->ip(),
+        'user_agent' => request()->userAgent(),
+        'session_id' => session()->getId(),
+        'viewed_at' => now(),
+    ]);
+
     return view('articles.show', compact('article'));
 })->name('articles.show');
 
@@ -98,7 +129,7 @@ Route::get('/seccion/{slug}', function ($slug) {
 })->name('category.show');
 
 Route::get('/opinion', [App\Http\Controllers\OpinionController::class, 'index'])->name('opinions.index');
-Route::get('/opinion/{opinion}', [App\Http\Controllers\OpinionController::class, 'show'])->name('opinions.show');
+Route::get('/opinion/{opinion:slug}', [App\Http\Controllers\OpinionController::class, 'show'])->name('opinions.show');
 
 Route::get('/etiqueta/{slug}', function ($slug) {
     $tag = App\Models\Tag::where('slug', $slug)->where('is_active', true)->firstOrFail();
@@ -117,3 +148,5 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [Src\UserManagement\Infrastructure\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::put('/password', [Src\UserManagement\Infrastructure\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
 });
+
+Route::get('/autor/{user:slug}', App\Livewire\AuthorProfile::class)->name('author.profile');

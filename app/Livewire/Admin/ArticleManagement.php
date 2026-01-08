@@ -7,6 +7,8 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Tag;
+use App\Models\AuditLog;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +18,7 @@ class ArticleManagement extends Component
 
     public $search = '';
     public $showModal = false;
-    
+
     // Form fields
     public $articleId;
     public $title;
@@ -28,12 +30,14 @@ class ArticleManagement extends Component
     public $is_featured = false;
     public $featured_image; // Temporal para upload
     public $existing_featured_image; // Para mostrar la actual
+    public $selectedTags = []; // IDs de las etiquetas seleccionadas
 
     public function mount()
     {
         /** @var \App\Models\User $user */
-        $user = auth()->user();
+        $user = Auth::user();
         if (!$user || !$user->hasPermission('manage_articles')) {
+
             abort(403);
         }
     }
@@ -58,7 +62,8 @@ class ArticleManagement extends Component
 
         return view('livewire.admin.article-management', [
             'articles' => $articles,
-            'categories' => Category::all()
+            'categories' => Category::all(),
+            'availableTags' => Tag::where('is_active', true)->get()
         ]);
     }
 
@@ -69,7 +74,7 @@ class ArticleManagement extends Component
 
     public function openModal()
     {
-        $this->reset(['articleId', 'title', 'slug', 'excerpt', 'content', 'category_id', 'status', 'is_featured', 'featured_image', 'existing_featured_image']);
+        $this->reset(['articleId', 'title', 'slug', 'excerpt', 'content', 'category_id', 'status', 'is_featured', 'featured_image', 'existing_featured_image', 'selectedTags']);
         $this->showModal = true;
     }
 
@@ -81,15 +86,19 @@ class ArticleManagement extends Component
         $this->slug = $article->slug;
         $this->excerpt = $article->excerpt;
         $this->content = $article->content;
-        $this->category_id = $article->category_id;
         $this->status = $article->status;
         $this->is_featured = $article->is_featured;
         $this->existing_featured_image = $article->featured_image;
+        $this->selectedTags = $article->tags->pluck('id')->map(fn($id) => (string)$id)->toArray();
         $this->showModal = true;
     }
 
     public function save()
     {
+        if (Auth::user()->role === 'user') {
+            return;
+        }
+
         $rules = $this->rules;
         if ($this->articleId) {
             $rules['slug'] = 'required|unique:articles,slug,' . $this->articleId;
@@ -117,9 +126,32 @@ class ArticleManagement extends Component
         }
 
         if ($this->articleId) {
-            Article::find($this->articleId)->update($data);
+            $article = Article::find($this->articleId);
+            $wasPublished = $article->status === 'published';
+            $article->update($data);
+            $article->tags()->sync($this->selectedTags);
+
+            // Check if it's being published now
+            if (!$wasPublished && $this->status === 'published') {
+                $article->update(['published_at' => now()]);
+                foreach ($article->author->followers as $follower) {
+                    $follower->notify(new \App\Notifications\NewArticlePublished($article));
+                }
+            }
+
+            AuditLog::log('update', $article, "Actualizó la noticia: {$article->title}");
         } else {
-            Article::create($data);
+            $article = Article::create($data);
+            $article->tags()->sync($this->selectedTags);
+
+            if ($this->status === 'published') {
+                $article->update(['published_at' => now()]);
+                foreach ($article->author->followers as $follower) {
+                    $follower->notify(new \App\Notifications\NewArticlePublished($article));
+                }
+            }
+
+            AuditLog::log('create', $article, "Creó la noticia: {$article->title}");
         }
 
         $this->showModal = false;
@@ -128,7 +160,16 @@ class ArticleManagement extends Component
 
     public function delete($id)
     {
-        Article::findOrFail($id)->delete();
+        if (Auth::user()->role === 'user') {
+            return;
+        }
+
+        $article = Article::findOrFail($id);
+        $title = $article->title;
+        $article->delete();
+
+        AuditLog::log('delete', $article, "Eliminó la noticia: {$title}");
+
         $this->dispatch('deleted');
     }
 }

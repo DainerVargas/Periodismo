@@ -128,7 +128,8 @@
                             </div>
                             <h3
                                 class="font-serif text-lg font-bold leading-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors dark:text-gray-200">
-                                <a href="{{ route('opinions.show', $opinion->id) }}">{{ $opinion->title }}</a>
+                                <a
+                                    href="{{ route('opinions.show', $opinion->slug ?: $opinion->id) }}">{{ $opinion->title }}</a>
                             </h3>
                         </article>
                     @endforeach
@@ -142,21 +143,14 @@
                     </h4>
                     <ol
                         class="list-decimal list-inside space-y-4 font-serif text-lg font-bold text-gray-900 dark:text-gray-100 marker:font-sans marker:text-gray-300 marker:font-bold">
-                        <li class="pl-2 border-b border-gray-100 dark:border-gray-800 pb-3">
-                            <a href="#"
-                                class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors block ml-[-0.5rem] mt-1">El
-                                escándalo financiero que sacude Wall Street</a>
-                        </li>
-                        <li class="pl-2 border-b border-gray-100 dark:border-gray-800 pb-3">
-                            <a href="#"
-                                class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors block ml-[-0.5rem] mt-1">Diez
-                                destinos ocultos para viajar este verano</a>
-                        </li>
-                        <li class="pl-2 pb-3">
-                            <a href="#"
-                                class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors block ml-[-0.5rem] mt-1">Entrevista
-                                exclusiva con el Nobel de Literatura</a>
-                        </li>
+                        @foreach ($mostReadToday as $article)
+                            <li class="pl-2 border-b border-gray-100 dark:border-gray-800 pb-3 last:border-b-0">
+                                <a href="{{ route('articles.show', $article->slug) }}"
+                                    class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors block ml-[-0.5rem] mt-1 leading-tight">
+                                    {{ $article->title }}
+                                </a>
+                            </li>
+                        @endforeach
                     </ol>
                 </div>
             </div>

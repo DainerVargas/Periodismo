@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Category;
+use App\Models\AuditLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -11,7 +12,7 @@ class CategoryManagement extends Component
 {
     public $search = '';
     public $showModal = false;
-    
+
     // Form fields
     public $categoryId;
     public $name;
@@ -73,6 +74,10 @@ class CategoryManagement extends Component
 
     public function save()
     {
+        if (Auth::user()->role === 'user') {
+            return;
+        }
+
         $rules = $this->rules;
         if ($this->categoryId) {
             $rules['slug'] = 'required|unique:categories,slug,' . $this->categoryId;
@@ -81,15 +86,17 @@ class CategoryManagement extends Component
         $this->validate($rules);
 
         if ($this->categoryId) {
-            Category::find($this->categoryId)->update([
+            $category = Category::find($this->categoryId);
+            $category->update([
                 'name' => $this->name,
                 'slug' => $this->slug,
                 'description' => $this->description,
                 'color' => $this->color,
                 'is_active' => $this->is_active,
             ]);
+            AuditLog::log('update', $category, "Actualizó la categoría: {$category->name}");
         } else {
-            Category::create([
+            $category = Category::create([
                 'name' => $this->name,
                 'slug' => $this->slug,
                 'description' => $this->description,
@@ -97,6 +104,7 @@ class CategoryManagement extends Component
                 'is_active' => $this->is_active,
                 'order' => Category::count() + 1
             ]);
+            AuditLog::log('create', $category, "Creó la categoría: {$category->name}");
         }
 
         $this->showModal = false;
@@ -105,7 +113,16 @@ class CategoryManagement extends Component
 
     public function delete($id)
     {
-        Category::findOrFail($id)->delete();
+        if (Auth::user()->role === 'user') {
+            return;
+        }
+
+        $category = Category::findOrFail($id);
+        $name = $category->name;
+        $category->delete();
+
+        AuditLog::log('delete', $category, "Eliminó la categoría: {$name}");
+
         $this->dispatch('deleted');
     }
 }

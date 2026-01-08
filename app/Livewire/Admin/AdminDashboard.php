@@ -9,11 +9,16 @@ class AdminDashboard extends Component
 {
     public $currentTab = 'users';
 
-    public function mount()
+    public function mount($tab = null)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
         if (!$user) return;
+
+        if ($tab) {
+            $this->currentTab = $tab;
+            return;
+        }
 
         // Determinar pestaña inicial de forma segura según permisos
         if ($user->hasPermission('manage_users')) {

@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\User;
+use App\Models\AuditLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -29,6 +30,8 @@ class UserManagement extends Component
         'manage_users' => 'Gestionar Usuarios',
         'manage_categories' => 'Gestionar Categorías',
         'manage_articles' => 'Gestionar Noticias',
+        'manage_opinions' => 'Gestionar Opinión',
+        'manage_tags' => 'Gestionar Etiquetas',
     ];
 
     public function mount()
@@ -73,6 +76,10 @@ class UserManagement extends Component
 
     public function save()
     {
+        if (Auth::user()->role !== 'admin') {
+            return;
+        }
+
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . ($this->userId ?? 'NULL'),
@@ -98,9 +105,12 @@ class UserManagement extends Component
         }
 
         if ($this->userId) {
-            User::findOrFail($this->userId)->update($data);
+            $user = User::findOrFail($this->userId);
+            $user->update($data);
+            AuditLog::log('update', $user, "Actualizó al usuario: {$user->name} ({$user->role})");
         } else {
-            User::create($data);
+            $user = User::create($data);
+            AuditLog::log('create', $user, "Creó un nuevo usuario: {$user->name} ({$user->role})");
         }
 
         $this->showModal = false;

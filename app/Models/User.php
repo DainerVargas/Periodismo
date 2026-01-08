@@ -12,10 +12,17 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'slug',
         'email',
         'password',
         'role',
         'permissions',
+        'avatar',
+        'bio',
+        'website',
+        'twitter',
+        'facebook',
+        'instagram',
     ];
 
     protected $hidden = [
@@ -44,5 +51,25 @@ class User extends Authenticatable
 
         // Para los demás, comprobamos el array de la columna 'permissions'
         return in_array($permission, $this->permissions ?? []);
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'following_id', 'follower_id')->withTimestamps();
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id')->withTimestamps();
+    }
+
+    public function isFollowing(User $user)
+    {
+        return $this->following()->where('following_id', $user->id)->exists();
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 }

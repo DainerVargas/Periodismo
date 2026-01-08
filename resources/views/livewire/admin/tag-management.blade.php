@@ -7,13 +7,15 @@
                 Editorial</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400">Palabras clave para indexar y relacionar noticias.</p>
         </div>
-        <button wire:click="openModal"
-            class="inline-flex items-center gap-2 bg-black text-white font-bold text-xs px-6 py-3 rounded-sm hover:opacity-90 transition-all uppercase tracking-widest shadow-lg">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Nueva Etiqueta
-        </button>
+        @if (auth()->user()->role !== 'user')
+            <button wire:click="openModal"
+                class="inline-flex items-center gap-2 bg-black text-white font-bold text-xs px-6 py-3 rounded-sm hover:opacity-90 transition-all uppercase tracking-widest shadow-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nueva Etiqueta
+            </button>
+        @endif
     </div>
 
     <!-- Barra de Búsqueda -->
@@ -56,17 +58,28 @@
                             <div class="text-[10px] font-mono text-gray-500 uppercase">#{{ $tag->slug }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <button wire:click="toggleStatus({{ $tag->id }})"
-                                class="px-2 py-0.5 rounded-sm text-[9px] font-bold uppercase {{ $tag->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                {{ $tag->is_active ? 'Activa' : 'Inactiva' }}
-                            </button>
+                            @if (auth()->user()->role !== 'user')
+                                <button wire:click="toggleStatus({{ $tag->id }})"
+                                    class="px-2 py-0.5 rounded-sm text-[9px] font-bold uppercase {{ $tag->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                    {{ $tag->is_active ? 'Activa' : 'Inactiva' }}
+                                </button>
+                            @else
+                                <span
+                                    class="px-2 py-0.5 rounded-sm text-[9px] font-bold uppercase {{ $tag->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                    {{ $tag->is_active ? 'Activa' : 'Inactiva' }}
+                                </span>
+                            @endif
                         </td>
                         <td
                             class="px-6 py-4 whitespace-nowrap text-right text-[10px] font-bold uppercase tracking-widest">
-                            <button wire:click="edit({{ $tag->id }})"
-                                class="text-brand-600 hover:text-brand-800 mr-4">Editar</button>
-                            <button wire:click="delete({{ $tag->id }})" wire:confirm="¿Seguro?"
-                                class="text-red-400 hover:text-red-600">Eliminar</button>
+                            @if (auth()->user()->role !== 'user')
+                                <button wire:click="edit({{ $tag->id }})"
+                                    class="text-brand-600 hover:text-brand-800 mr-4">Editar</button>
+                                <button wire:click="delete({{ $tag->id }})" wire:confirm="¿Seguro?"
+                                    class="text-red-400 hover:text-red-600">Eliminar</button>
+                            @else
+                                <span class="text-gray-400">Ver solamente</span>
+                            @endif
                         </td>
                     </tr>
                 @endforeach
@@ -88,6 +101,12 @@
                         class="px-8 py-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
                         <h3 class="text-xl font-serif font-bold">{{ $tagId ? 'Editar Etiqueta' : 'Nueva Etiqueta' }}
                         </h3>
+                        <button wire:click="$set('showModal', false)" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
                     </div>
                     <div class="p-8 space-y-6">
                         <div>

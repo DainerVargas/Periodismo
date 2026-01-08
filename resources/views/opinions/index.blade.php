@@ -38,7 +38,7 @@
 
                         <h2
                             class="font-serif text-2xl font-bold leading-tight dark:text-gray-100 group-hover:text-brand-600 transition-colors mb-4">
-                            <a href="{{ route('opinions.show', $opinion->id) }}" class="link-underline">
+                            <a href="{{ route('opinions.show', $opinion->slug ?: $opinion->id) }}" class="link-underline">
                                 {{ $opinion->title }}
                             </a>
                         </h2>
@@ -50,7 +50,7 @@
                         <div
                             class="mt-8 pt-6 border-t border-gray-50 dark:border-gray-800 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
                             <span>{{ $opinion->created_at->format('M d, Y') }}</span>
-                            <a href="{{ route('opinions.show', $opinion->id) }}"
+                            <a href="{{ route('opinions.show', $opinion->slug ?: $opinion->id) }}"
                                 class="text-black dark:text-white hover:text-brand-600 transition-colors">Leer más →</a>
                         </div>
                     </div>

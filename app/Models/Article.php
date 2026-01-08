@@ -64,4 +64,14 @@ class Article extends Model
     {
         return $this->morphMany(Reaction::class, 'reactable');
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function views()
+    {
+        return $this->hasMany(ArticleView::class);
+    }
 }

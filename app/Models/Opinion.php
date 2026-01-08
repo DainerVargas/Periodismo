@@ -6,5 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Opinion extends Model
 {
-    protected $fillable = ['title', 'author', 'image', 'content'];
+    protected $fillable = ['title', 'slug', 'author', 'image', 'content'];
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }

@@ -66,6 +66,16 @@
                             </svg>
                             Administración
                         </button>
+                        @if (auth()->user()->role === 'admin')
+                            <div class="pl-8 pt-1">
+                                <a href="#" @click.prevent="activeTab = 'audit_log'"
+                                    class="text-[10px] font-bold uppercase tracking-widest transition-colors"
+                                    :class="activeTab === 'audit_log' ? 'text-brand-600' :
+                                        'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'">
+                                    Historial de Acciones
+                                </a>
+                            </div>
+                        @endif
                     @endif
 
                     <!-- Logout Button -->
@@ -375,9 +385,18 @@
                         x-transition:enter-start="opacity-0 translate-x-4"
                         x-transition:enter-end="opacity-100 translate-x-0" style="display: none;" class="space-y-6">
 
-                        <livewire:admin.admin-dashboard />
+                        <livewire:admin.admin-dashboard wire:key="admin-dashboard-default" />
 
                     </div>
+                    @if (auth()->user()->role === 'admin')
+                        <div x-show="activeTab === 'audit_log'" x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 translate-x-4"
+                            x-transition:enter-end="opacity-100 translate-x-0" style="display: none;" class="space-y-6">
+
+                            <livewire:admin.admin-dashboard tab="audit" wire:key="admin-dashboard-audit" />
+
+                        </div>
+                    @endif
                 @endif
 
                 <!-- Toast Notifications -->
