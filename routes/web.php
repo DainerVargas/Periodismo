@@ -10,6 +10,7 @@ use App\Models\Article;
 use Src\UserManagement\Infrastructure\Controllers\RegisterController;
 
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     $featuredArticle = Article::with(['category', 'author'])
@@ -104,7 +105,7 @@ Route::get('/noticia/{article:slug}', function (Article $article) {
     // Registrar vista granular
     \App\Models\ArticleView::create([
         'article_id' => $article->id,
-        'user_id' => auth()->id(),
+        'user_id' => Auth::id(),
         'ip_address' => request()->ip(),
         'user_agent' => request()->userAgent(),
         'session_id' => session()->getId(),
@@ -130,6 +131,15 @@ Route::get('/seccion/{slug}', function ($slug) {
 
 Route::get('/opinion', [App\Http\Controllers\OpinionController::class, 'index'])->name('opinions.index');
 Route::get('/opinion/{opinion:slug}', [App\Http\Controllers\OpinionController::class, 'show'])->name('opinions.show');
+
+Route::get('/empleos', App\Livewire\Jobs\JobList::class)->name('jobs.index');
+Route::get('/empleos/{vacancy:slug}', App\Livewire\Jobs\JobDetail::class)->name('jobs.show');
+
+// Rutas protegidas para Admin/Company
+Route::middleware(['auth'])->group(function () {
+    Route::get('/empleos/admin/crear', App\Livewire\Jobs\Admin\CreateVacancy::class)->name('jobs.create');
+    Route::get('/empleos/admin/gestionar', App\Livewire\Jobs\Admin\ManageVacancies::class)->name('jobs.manage');
+});
 
 Route::get('/etiqueta/{slug}', function ($slug) {
     $tag = App\Models\Tag::where('slug', $slug)->where('is_active', true)->firstOrFail();

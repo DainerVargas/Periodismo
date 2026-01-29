@@ -15,17 +15,10 @@ class UserManagement extends Component
 
     public $search = '';
     public $showModal = false;
-
-    // Form fields
-    public $userId;
-    public $name;
-    public $email;
-    public $password;
-    public $password_confirmation;
-    public $role = 'user';
-    public $permissions = [];
-
-    // Available permissions
+    public $userId, $name, $email;
+    public $password, $password_confirmation;
+    public $role = 'user', $permissions = [];
+    
     public $availablePermissions = [
         'manage_users' => 'Gestionar Usuarios',
         'manage_categories' => 'Gestionar Categorías',

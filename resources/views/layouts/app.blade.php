@@ -99,45 +99,57 @@
     </div>
 
     <!-- Header Principal -->
-    <header
-        class="border-b-4 border-black dark:border-white pt-8 pb-4 bg-white dark:bg-gray-900 transition-colors duration-300">
-        <div class="mx-auto max-w-7xl px-4 text-center">
-            <a href="/" class="group inline-block">
-                <h1
-                    class="font-serif text-5xl sm:text-7xl font-black tracking-tighter mb-2 group-hover:opacity-80 transition-opacity">
-                    Periodismo Digital
-                </h1>
-                <div
-                    class="flex items-center justify-center gap-3 text-sm font-sans font-medium tracking-[0.2em] uppercase text-gray-500 dark:text-gray-400">
-                    <span class="w-2 h-2 bg-brand-600 rounded-full"></span>
-                    <span>Independiente • Verdad • Análisis</span>
-                    <span class="w-2 h-2 bg-brand-600 rounded-full"></span>
-                </div>
-            </a>
-        </div>
-
-        <!-- Navbar -->
-        <nav
-            class="mt-6 border-t border-b border-gray-200 dark:border-gray-800 py-3 sticky top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur z-40">
-            <div class="mx-auto max-w-7xl px-4 overflow-x-auto">
-                <ul
-                    class="flex justify-center items-center gap-x-8 gap-y-2 text-sm font-bold uppercase tracking-wide whitespace-nowrap min-w-max mx-auto px-4">
-                    <li><a href="/"
-                            class="text-black dark:text-white hover:text-brand-600 transition-colors link-underline pb-0.5">Portada</a>
-                    </li>
-                    @foreach ($globalCategories as $category)
-                        <li>
-                            <a href="{{ route('category.show', $category->slug) }}"
-                                class="text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors link-underline pb-0.5"
-                                style="--hover-color: {{ $category->color }}">
-                                {{ $category->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
+    @unless (request()->routeIs(['profile.edit', 'jobs.create', 'jobs.manage']))
+        <header
+            class="border-b-4 border-black dark:border-white pt-8 pb-4 bg-white dark:bg-gray-900 transition-colors duration-300">
+            <div class="mx-auto max-w-7xl px-4 text-center">
+                <a href="/" class="group inline-block">
+                    @if (request()->routeIs('jobs.*'))
+                        <h1
+                            class="font-serif text-4xl sm:text-6xl font-black tracking-tighter mb-2 group-hover:text-brand-600 transition-colors">
+                            Bolsa de Empleo
+                        </h1>
+                    @else
+                        <h1
+                            class="font-serif text-5xl sm:text-7xl font-black tracking-tighter mb-2 group-hover:opacity-80 transition-opacity">
+                            Periodismo Digital
+                        </h1>
+                        <div
+                            class="flex items-center justify-center gap-3 text-sm font-sans font-medium tracking-[0.2em] uppercase text-gray-500 dark:text-gray-400">
+                            <span class="w-2 h-2 bg-brand-600 rounded-full"></span>
+                            <span>Independiente • Verdad • Análisis</span>
+                            <span class="w-2 h-2 bg-brand-600 rounded-full"></span>
+                        </div>
+                    @endif
+                </a>
             </div>
-        </nav>
-    </header>
+
+            <!-- Navbar -->
+            <nav
+                class="mt-6 border-t border-b border-gray-200 dark:border-gray-800 py-3 sticky top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur z-40">
+                <div class="mx-auto max-w-7xl px-4 overflow-x-auto">
+                    <ul
+                        class="flex justify-center items-center gap-x-8 gap-y-2 text-sm font-bold uppercase tracking-wide whitespace-nowrap min-w-max mx-auto px-4">
+                        <li><a href="/"
+                                class="text-black dark:text-white hover:text-brand-600 transition-colors link-underline pb-0.5">Portada</a>
+                        </li>
+                        <li><a href="{{ route('jobs.index') }}"
+                                class="text-black dark:text-white hover:text-brand-600 transition-colors link-underline pb-0.5">Empleos</a>
+                        </li>
+                        @foreach ($globalCategories as $category)
+                            <li>
+                                <a href="{{ route('category.show', $category->slug) }}"
+                                    class="text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors link-underline pb-0.5"
+                                    style="--hover-color: {{ $category->color }}">
+                                    {{ $category->name }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </nav>
+        </header>
+    @endunless
 
     <!-- Main Content -->
     <main class="flex-grow py-8 bg-paper dark:bg-gray-950 transition-colors duration-300">

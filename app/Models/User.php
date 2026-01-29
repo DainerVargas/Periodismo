@@ -72,4 +72,24 @@ class User extends Authenticatable
     {
         return 'slug';
     }
+
+    public function companyProfile()
+    {
+        return $this->hasOne(CompanyProfile::class);
+    }
+
+    public function jobVacancies()
+    {
+        return $this->hasMany(JobVacancy::class);
+    }
+
+    public function jobApplications()
+    {
+        return $this->hasMany(JobApplication::class);
+    }
+
+    public function isCompany(): bool
+    {
+        return $this->role === 'company' || $this->role === 'admin';
+    }
 }

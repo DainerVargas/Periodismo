@@ -31,6 +31,8 @@ class AdminDashboard extends Component
             $this->currentTab = 'opinions';
         } elseif ($user->hasPermission('manage_tags')) {
             $this->currentTab = 'tags';
+        } elseif ($user->role === 'admin') {
+            $this->currentTab = 'job_categories';
         } else {
             $this->currentTab = 'roles';
         }

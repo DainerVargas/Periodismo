@@ -21,9 +21,10 @@
     <!-- Navegación de Pestañas -->
     <div
         class="flex items-center border-b-2 border-gray-50 dark:border-gray-800 mb-8 overflow-x-auto no-scrollbar scroll-smooth">
-        @foreach (['users' => 'Usuarios', 'categories' => 'Categorías', 'articles' => 'Noticias', 'opinions' => 'Opinión', 'tags' => 'Etiquetas', 'audit' => 'Auditoría', 'roles' => 'Estructura'] as $tab => $label)
+        @foreach (['users' => 'Usuarios', 'categories' => 'Categorías', 'job_categories' => 'Categorías Empleo', 'articles' => 'Noticias', 'opinions' => 'Opinión', 'tags' => 'Etiquetas', 'audit' => 'Auditoría', 'roles' => 'Estructura'] as $tab => $label)
             @if (auth()->user()->hasPermission("manage_$tab") ||
                     $tab === 'roles' ||
+                    ($tab === 'job_categories' && auth()->user()->role === 'admin') ||
                     ($tab === 'audit' && auth()->user()->role === 'admin'))
                 <button wire:click="switchTab('{{ $tab }}')"
                     class="group relative py-4 px-6 text-[10px] font-black uppercase tracking-[0.2em] transition-all border-b-2 -mb-[2px] cursor-pointer {{ $currentTab === $tab ? 'text-brand-600 border-brand-600 bg-brand-50/5' : 'text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:border-gray-300' }}">
@@ -39,6 +40,11 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                                 </path>
+                            </svg>
+                        @elseif($tab === 'job_categories')
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         @elseif($tab === 'articles')
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,6 +88,8 @@
             <livewire:admin.user-management wire:key="tab-comp-users" />
         @elseif($currentTab === 'categories' && auth()->user()->hasPermission('manage_categories'))
             <livewire:admin.category-management wire:key="tab-comp-categories" />
+        @elseif($currentTab === 'job_categories' && auth()->user()->role === 'admin')
+            <livewire:admin.job-category-management wire:key="tab-comp-job-categories" />
         @elseif($currentTab === 'articles' && auth()->user()->hasPermission('manage_articles'))
             <livewire:admin.article-management wire:key="tab-comp-articles" />
         @elseif($currentTab === 'opinions' && auth()->user()->hasPermission('manage_opinions'))

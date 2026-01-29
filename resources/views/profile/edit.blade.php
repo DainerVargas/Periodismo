@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" x-data="{ activeTab: 'profile' }">
+    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" x-data="{ activeTab: new URLSearchParams(window.location.search).get('tab') || 'profile' }">
 
         <div class="mb-8 animate-enter">
             <h1 class="font-serif text-3xl font-bold text-ink dark:text-white">Mi Cuenta</h1>
@@ -12,8 +12,19 @@
 
             <!-- Sidebar Menú -->
             <div class="lg:col-span-3">
+                <div class="mb-6">
+                    <a href="/"
+                        class="group flex items-center px-3 py-2 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-all">
+                        <svg class="mr-2 h-4 w-4 transform group-hover:-translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Volver al Inicio
+                    </a>
+                </div>
                 <nav class="space-y-1">
-                    <button @click.prevent="activeTab = 'profile'"
+                    <button @click.prevent="activeTab = 'profile'; window.history.replaceState({}, '', '?tab=profile')"
                         :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'profile', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'profile' }"
                         class="w-full group flex items-center px-3 py-2 text-sm font-bold rounded-sm border-l-4 transition-colors">
                         <svg class="mr-3 h-5 w-5 flex-shrink-0"
@@ -25,7 +36,7 @@
                         Perfil Público
                     </button>
 
-                    <button @click.prevent="activeTab = 'security'"
+                    <button @click.prevent="activeTab = 'security'; window.history.replaceState({}, '', '?tab=security')"
                         :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'security', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'security' }"
                         class="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-sm border-l-4 transition-colors">
                         <svg class="mr-3 h-5 w-5 flex-shrink-0"
@@ -38,7 +49,8 @@
                         Seguridad
                     </button>
 
-                    <button @click.prevent="activeTab = 'subscription'"
+                    <button
+                        @click.prevent="activeTab = 'subscription'; window.history.replaceState({}, '', '?tab=subscription')"
                         :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'subscription', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'subscription' }"
                         class="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-sm border-l-4 transition-colors">
                         <svg class="mr-3 h-5 w-5 flex-shrink-0"
@@ -50,6 +62,33 @@
                         </svg>
                         Suscripción
                     </button>
+
+                    <button
+                        @click.prevent="activeTab = 'applications'; window.history.replaceState({}, '', '?tab=applications')"
+                        :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'applications', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'applications' }"
+                        class="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-sm border-l-4 transition-colors">
+                        <svg class="mr-3 h-5 w-5 flex-shrink-0"
+                            :class="{ 'text-brand-600 dark:text-white': activeTab === 'applications', 'text-gray-400': activeTab !== 'applications' }"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01m-.01 4h.01" />
+                        </svg>
+                        Mis Postulaciones
+                    </button>
+
+                    @if (auth()->user()->isCompany())
+                        <button @click.prevent="activeTab = 'jobs'; window.history.replaceState({}, '', '?tab=jobs')"
+                            :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'jobs', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'jobs' }"
+                            class="w-full group flex items-center px-3 py-2 text-sm font-bold rounded-sm border-l-4 transition-colors">
+                            <svg class="mr-3 h-5 w-5 flex-shrink-0"
+                                :class="{ 'text-brand-600 dark:text-white': activeTab === 'jobs', 'text-gray-400': activeTab !== 'jobs' }"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            Gestión de Empleo
+                        </button>
+                    @endif
 
                     @if (auth()->user()->role === 'admin' || !empty(auth()->user()->permissions))
                         <button @click.prevent="activeTab = 'admin'"
@@ -379,7 +418,27 @@
                     </div>
                 </div>
 
-                <!-- TAB 4: ADMINISTRACIÓN -->
+                <!-- TAB 3.5: MIS POSTULACIONES -->
+                <div x-show="activeTab === 'applications'" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0"
+                    style="display: none;" class="space-y-6">
+
+                    <livewire:jobs.my-applications />
+
+                </div>
+
+                <!-- TAB 4: GESTIÓN DE EMPLEO -->
+                @if (auth()->user()->isCompany())
+                    <div x-show="activeTab === 'jobs'" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-x-4"
+                        x-transition:enter-end="opacity-100 translate-x-0" style="display: none;" class="space-y-6">
+
+                        <livewire:jobs.admin.manage-vacancies />
+
+                    </div>
+                @endif
+
+                <!-- TAB 5: ADMINISTRACIÓN -->
                 @if (auth()->user()->role === 'admin' || !empty(auth()->user()->permissions))
                     <div x-show="activeTab === 'admin'" x-transition:enter="transition ease-out duration-300"
                         x-transition:enter-start="opacity-0 translate-x-4"

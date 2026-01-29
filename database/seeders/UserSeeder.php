@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin principal
-        User::create([
+        $admin = User::create([
             'name' => 'Administrador',
             'email' => 'admin@periodismo.local',
             'email_verified_at' => now(),
@@ -22,6 +22,15 @@ class UserSeeder extends Seeder
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
+        ]);
+
+        // Crear perfil de empresa para el admin
+        $admin->companyProfile()->create([
+            'company_name' => 'Periodismo Digital',
+            'description' => 'Medio de comunicación digital independiente dedicado a la verdad y el análisis profundo de la actualidad.',
+            'industry' => 'Medios de Comunicación',
+            'website' => 'https://periodismo.local',
+            'company_size' => '10-50 empleados',
         ]);
 
         // Editor de ejemplo
