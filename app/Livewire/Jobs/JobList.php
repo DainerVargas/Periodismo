@@ -38,11 +38,25 @@ class JobList extends Component
         $vacancies = JobVacancy::with(['company.companyProfile', 'category'])
             ->where('status', 'active')
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('title', 'like', '%' . $this->search . '%')
-                        ->orWhereHas('company', function ($subQ) {
-                            $subQ->where('name', 'like', '%' . $this->search . '%');
+                $words = preg_split('/\s+/', strtolower(trim($this->search)));
+                $query->where(function ($q) use ($words) {
+                    foreach ($words as $word) {
+                        if (strlen($word) <= 4) {
+                            continue;
+                        }
+                        $term = '%' . $word . '%';
+                        $q->orWhere(function ($subQ) use ($term) {
+                            $subQ->where('title', 'LIKE', $term)
+                                ->orWhere('description', 'LIKE', $term)
+                                ->orWhere('location', 'LIKE', $term)
+                                ->orWhereHas('category', function ($catQ) use ($term) {
+                                    $catQ->where('name', 'LIKE', $term);
+                                })
+                                ->orWhereHas('company', function ($compQ) use ($term) {
+                                    $compQ->where('name', 'LIKE', $term);
+                                });
                         });
+                    }
                 });
             })
             ->when($this->selectedCategory, function ($query) {

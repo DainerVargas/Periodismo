@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
+/* Configuración de Modo Oscuro para Tailwind 4 (Clase .dark) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
     /* Tipografía */
     --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-    --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times,
-        serif;
+    --font-serif:
+        "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
 
     /* Paleta Modos */
     --color-paper: #f9f9f9;
@@ -72,40 +75,14 @@
     }
 }
 
-/* Dark Mode Overrides */
+/* Base Body Styles */
+body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .dark body {
     background-color: var(--color-paper-dark);
     color: var(--color-ink-dark);
-}
-
-.dark .text-ink {
-    color: var(--color-ink-dark);
-}
-
-.dark .bg-paper {
-    background-color: var(--color-paper-dark);
-}
-
-.dark .border-black {
-    border-color: var(--color-ink-dark);
-}
-
-.dark header h1 {
-    color: var(--color-ink-dark);
-}
-
-.dark header p {
-    color: #9ca3af;
-}
-
-.dark nav a {
-    color: #d1d5db;
-}
-
-.dark nav a:hover {
-    color: var(--color-brand-500);
-}
-
-.dark footer {
-    border-top-color: var(--color-brand-500);
 }

@@ -1,18 +1,48 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" x-data="{ activeTab: new URLSearchParams(window.location.search).get('tab') || 'profile' }">
+    <div class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8" x-data="{ activeTab: new URLSearchParams(window.location.search).get('tab') || 'profile', mobileMenuOpen: false }">
 
         <div class="mb-8 animate-enter">
             <h1 class="font-serif text-3xl font-bold text-ink dark:text-white">Mi Cuenta</h1>
             <p class="mt-2 text-gray-600 dark:text-gray-400">Gestiona tu información personal, seguridad y suscripción.</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 relative">
+
+            <!-- Botón Hamburguesa Móvil -->
+            <div class="lg:hidden">
+                <button @click="mobileMenuOpen = !mobileMenuOpen"
+                    class="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-sm shadow-sm hover:border-brand-500 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col gap-1 w-5">
+                            <span class="h-0.5 w-full bg-brand-600 transition-all duration-300"
+                                :class="mobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''"></span>
+                            <span class="h-0.5 w-full bg-brand-600 transition-all duration-300"
+                                :class="mobileMenuOpen ? 'opacity-0' : ''"></span>
+                            <span class="h-0.5 w-full bg-brand-600 transition-all duration-300"
+                                :class="mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''"></span>
+                        </div>
+                        <span class="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest">Navegar
+                            Secciones</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-gray-400 font-bold uppercase"
+                            x-text="activeTab === 'profile' ? 'Perfil' : (activeTab === 'security' ? 'Seguridad' : (activeTab === 'subscription' ? 'Suscripción' : (activeTab === 'applications' ? 'Postulaciones' : (activeTab === 'jobs' ? 'Empleo' : 'Admin'))))"></span>
+                        <svg class="h-4 w-4 text-gray-400 transition-transform duration-300"
+                            :class="{ 'rotate-180': mobileMenuOpen }" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </button>
+            </div>
 
             <!-- Sidebar Menú -->
-            <div class="lg:col-span-3">
-                <div class="mb-6">
+            <div class="lg:col-span-3 transition-all duration-300 overflow-hidden lg:overflow-visible"
+                :class="mobileMenuOpen ? 'max-h-[1000px] opacity-100 mt-2' :
+                    'max-h-0 opacity-0 lg:max-h-none lg:opacity-100 lg:mt-0 lg:block hidden'">
+                <div class="mb-6 hidden lg:block">
                     <a href="/"
                         class="group flex items-center px-3 py-2 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-brand-600 transition-all">
                         <svg class="mr-2 h-4 w-4 transform group-hover:-translate-x-1 transition-transform" fill="none"
@@ -24,7 +54,8 @@
                     </a>
                 </div>
                 <nav class="space-y-1">
-                    <button @click.prevent="activeTab = 'profile'; window.history.replaceState({}, '', '?tab=profile')"
+                    <button
+                        @click.prevent="activeTab = 'profile'; window.history.replaceState({}, '', '?tab=profile'); mobileMenuOpen = false"
                         :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'profile', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'profile' }"
                         class="w-full group flex items-center px-3 py-2 text-sm font-bold rounded-sm border-l-4 transition-colors">
                         <svg class="mr-3 h-5 w-5 flex-shrink-0"
@@ -36,7 +67,8 @@
                         Perfil Público
                     </button>
 
-                    <button @click.prevent="activeTab = 'security'; window.history.replaceState({}, '', '?tab=security')"
+                    <button
+                        @click.prevent="activeTab = 'security'; window.history.replaceState({}, '', '?tab=security'); mobileMenuOpen = false"
                         :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'security', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'security' }"
                         class="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-sm border-l-4 transition-colors">
                         <svg class="mr-3 h-5 w-5 flex-shrink-0"
@@ -50,7 +82,7 @@
                     </button>
 
                     <button
-                        @click.prevent="activeTab = 'subscription'; window.history.replaceState({}, '', '?tab=subscription')"
+                        @click.prevent="activeTab = 'subscription'; window.history.replaceState({}, '', '?tab=subscription'); mobileMenuOpen = false"
                         :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'subscription', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'subscription' }"
                         class="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-sm border-l-4 transition-colors">
                         <svg class="mr-3 h-5 w-5 flex-shrink-0"
@@ -64,7 +96,7 @@
                     </button>
 
                     <button
-                        @click.prevent="activeTab = 'applications'; window.history.replaceState({}, '', '?tab=applications')"
+                        @click.prevent="activeTab = 'applications'; window.history.replaceState({}, '', '?tab=applications'); mobileMenuOpen = false"
                         :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'applications', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'applications' }"
                         class="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-sm border-l-4 transition-colors">
                         <svg class="mr-3 h-5 w-5 flex-shrink-0"
@@ -77,7 +109,21 @@
                     </button>
 
                     @if (auth()->user()->isCompany())
-                        <button @click.prevent="activeTab = 'jobs'; window.history.replaceState({}, '', '?tab=jobs')"
+                        <button
+                            @click.prevent="activeTab = 'company'; window.history.replaceState({}, '', '?tab=company'); mobileMenuOpen = false"
+                            :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'company', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'company' }"
+                            class="w-full group flex items-center px-3 py-2 text-sm font-bold rounded-sm border-l-4 transition-colors">
+                            <svg class="mr-3 h-5 w-5 flex-shrink-0"
+                                :class="{ 'text-brand-600 dark:text-white': activeTab === 'company', 'text-gray-400': activeTab !== 'company' }"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4a1 1 0 011-1h2a1 1 0 011 1v3M12 7h1m-1 4h1m-5 10H3a2 2 0 01-2-2V7a2 2 0 012-2h2m4 0h6a2 2 0 012 2v10a2 2 0 01-2 2h-3" />
+                            </svg>
+                            Perfil de Empresa
+                        </button>
+
+                        <button
+                            @click.prevent="activeTab = 'jobs'; window.history.replaceState({}, '', '?tab=jobs'); mobileMenuOpen = false"
                             :class="{ 'bg-gray-100 border-brand-600 text-brand-600 dark:bg-gray-800 dark:text-white': activeTab === 'jobs', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'jobs' }"
                             class="w-full group flex items-center px-3 py-2 text-sm font-bold rounded-sm border-l-4 transition-colors">
                             <svg class="mr-3 h-5 w-5 flex-shrink-0"
@@ -91,7 +137,7 @@
                     @endif
 
                     @if (auth()->user()->role === 'admin' || !empty(auth()->user()->permissions))
-                        <button @click.prevent="activeTab = 'admin'"
+                        <button @click.prevent="activeTab = 'admin'; mobileMenuOpen = false"
                             :class="{ 'bg-brand-600 text-white border-brand-800': activeTab === 'admin', 'text-gray-900 border-transparent hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800': activeTab !== 'admin' }"
                             class="w-full group flex items-center px-3 py-2 text-sm font-bold rounded-sm border-l-4 transition-colors mt-6">
                             <svg class="mr-3 h-5 w-5 flex-shrink-0"
@@ -107,7 +153,7 @@
                         </button>
                         @if (auth()->user()->role === 'admin')
                             <div class="pl-8 pt-1">
-                                <a href="#" @click.prevent="activeTab = 'audit_log'"
+                                <a href="#" @click.prevent="activeTab = 'audit_log'; mobileMenuOpen = false"
                                     class="text-[10px] font-bold uppercase tracking-widest transition-colors"
                                     :class="activeTab === 'audit_log' ? 'text-brand-600' :
                                         'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'">
@@ -117,20 +163,7 @@
                         @endif
                     @endif
 
-                    <!-- Logout Button -->
-                    <form method="POST" action="{{ route('logout') }}"
-                        class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800">
-                        @csrf
-                        <button type="submit"
-                            class="w-full text-left text-red-600 hover:text-red-800 group flex items-center px-3 py-2 text-sm font-bold rounded-sm transition-colors opacity-80 hover:opacity-100">
-                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                                </path>
-                            </svg>
-                            Cerrar Sesión
-                        </button>
-                    </form>
+
                 </nav>
             </div>
 
@@ -147,19 +180,15 @@
                         @csrf
                         @method('PATCH')
 
-                        <!-- Header Form -->
                         <div class="px-6 py-6">
                             <h2 class="text-lg font-bold text-gray-900 dark:text-white">Información Básica</h2>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Esta información será pública en tu
                                 perfil de autor o comentarista.</p>
                         </div>
 
-                        <!-- Fields -->
                         <div class="px-6 py-6 space-y-8">
 
-                            <!-- Avatar en Tiempo Real -->
                             <div x-data="{ photoName: null, photoPreview: null }" class="flex items-center gap-6">
-                                <!-- Input File Oculto -->
                                 <input type="file" name="avatar" id="avatar" class="hidden" x-ref="photo"
                                     x-on:change="
                                     photoName = $refs.photo.files[0].name;
@@ -171,7 +200,6 @@
                                 ">
 
                                 <div class="relative group cursor-pointer" x-on:click.prevent="$refs.photo.click()">
-                                    <!-- Preview Condition -->
                                     <div
                                         class="h-24 w-24 rounded-full overflow-hidden bg-gray-100 ring-4 ring-white dark:ring-gray-800 shadow-sm relative">
                                         <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random' }}"
@@ -180,8 +208,6 @@
                                             x-show="! photoPreview">
                                         <img x-bind:src="photoPreview" class="h-full w-full object-cover"
                                             x-show="photoPreview" style="display: none;">
-
-                                        <!-- Overlay Hover -->
                                         <div
                                             class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor"
@@ -222,7 +248,7 @@
                                         completo</label>
                                     <input type="text" name="name" id="name"
                                         value="{{ old('name', $user->name) }}"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2">
+                                        class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2">
                                 </div>
 
                                 <div class="sm:col-span-3">
@@ -231,14 +257,14 @@
                                         electrónico</label>
                                     <input type="email" name="email" id="email"
                                         value="{{ old('email', $user->email) }}"
-                                        class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2">
+                                        class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2">
                                 </div>
 
                                 <div class="sm:col-span-6">
                                     <label for="bio"
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">Biografía</label>
                                     <textarea id="bio" name="bio" rows="4"
-                                        class="block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm">{{ old('bio', $user->bio) }}</textarea>
+                                        class="block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2">{{ old('bio', $user->bio) }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -246,7 +272,7 @@
                         <!-- Footer Actions -->
                         <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 flex justify-end">
                             <button type="submit"
-                                class="bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs px-6 py-2.5 rounded-sm hover:opacity-90 shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                                class="bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs px-6 py-2.5 cursor-pointer rounded-sm hover:opacity-90 shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-black">
                                 Guardar cambios
                             </button>
                         </div>
@@ -275,24 +301,26 @@
                                 <label for="current_password"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña
                                     Actual</label>
-                                <input type="password" name="current_password" id="current_password"
-                                    class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2">
+                                <input type="password" name="current_password" placeholder="********"
+                                    id="current_password"
+                                    class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2">
                             </div>
 
                             <div>
                                 <label for="password"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nueva
                                     Contraseña</label>
-                                <input type="password" name="password" id="password"
-                                    class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2">
+                                <input type="password" name="password" placeholder="********" id="password"
+                                    class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2">
                             </div>
 
                             <div>
                                 <label for="password_confirmation"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirmar Nueva
                                     Contraseña</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation"
-                                    class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm py-2">
+                                <input type="password" name="password_confirmation" placeholder="********"
+                                    id="password_confirmation"
+                                    class="mt-1 block w-full rounded-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2">
                             </div>
                         </div>
 
@@ -434,6 +462,14 @@
                         x-transition:enter-end="opacity-100 translate-x-0" style="display: none;" class="space-y-6">
 
                         <livewire:jobs.admin.manage-vacancies />
+
+                    </div>
+
+                    <div x-show="activeTab === 'company'" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-x-4"
+                        x-transition:enter-end="opacity-100 translate-x-0" style="display: none;" class="space-y-6">
+
+                        <livewire:jobs.admin.company-profile-form />
 
                     </div>
                 @endif

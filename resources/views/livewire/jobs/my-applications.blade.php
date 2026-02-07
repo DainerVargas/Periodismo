@@ -32,7 +32,9 @@
                             @endif
                             <div>
                                 <h3 class="font-bold text-lg text-gray-900 dark:text-white leading-tight">
-                                    {{ $application->vacancy->title }}
+                                    <a href="{{ route('jobs.show', $application->vacancy->slug) }}">
+                                        {{ $application->vacancy->title }}
+                                    </a>
                                 </h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">
                                     {{ $application->vacancy->company->companyProfile->company_name ?? $application->vacancy->company->name }}

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\View\View;
+use App\Models\AuditLog;
 
 final class ProfileController extends Controller
 {
@@ -24,16 +25,19 @@ final class ProfileController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($request->user()->id)],
             'bio' => ['nullable', 'string', 'max:1000'],
-            'avatar' => ['nullable', 'image', 'max:2048'], // 2MB Max
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
         $user = $request->user();
-        
-        // Manejo de Avatar
+        $oldData = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'bio' => $user->bio,
+        ];
+
+        $user->name = $validated['name'];
         if ($request->hasFile('avatar')) {
-            // Guardar en disco 'public' dentro de carpeta 'avatars'
             $path = $request->file('avatar')->store('avatars', 'public');
-            // Crear la URL accesible
             $validated['avatar'] = '/storage/' . $path;
         }
 
@@ -45,6 +49,22 @@ final class ProfileController extends Controller
 
         $user->save();
 
+        // Registrar en auditoría
+        if (
+            $user->hasPermission('manage_users') || $user->hasPermission('manage_categories') ||
+            $user->hasPermission('manage_articles') || $user->hasPermission('manage_opinions') ||
+            $user->hasPermission('manage_tags') || $user->role === 'admin'
+        ) {
+            AuditLog::log('update', $user, "Actualizó su perfil de usuario", [
+                'old' => $oldData,
+                'new' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'bio' => $user->bio,
+                ]
+            ]);
+        }
+
         return back()->with('status', 'profile-updated');
     }
 
@@ -55,9 +75,19 @@ final class ProfileController extends Controller
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
-        $request->user()->update([
+        $user = $request->user();
+        $user->update([
             'password' => bcrypt($validated['password']),
         ]);
+
+        // Registrar en auditoría
+        if (
+            $user->hasPermission('manage_users') || $user->hasPermission('manage_categories') ||
+            $user->hasPermission('manage_articles') || $user->hasPermission('manage_opinions') ||
+            $user->hasPermission('manage_tags') || $user->role === 'admin'
+        ) {
+            AuditLog::log('update', $user, "Cambió su contraseña");
+        }
 
         return back()->with('status', 'password-updated');
     }

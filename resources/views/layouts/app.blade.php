@@ -29,59 +29,103 @@
 
 <body class="flex min-h-full flex-col text-ink bg-paper transition-colors duration-300">
 
-    <!-- Top Bar: Utilidades -->
+    <!-- Top Bar: Utilidades (Fixed) -->
     <div
-        class="border-b border-gray-200 dark:border-gray-800 py-1 bg-gray-50 dark:bg-gray-900/50 text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400">
+        class="fixed top-0 left-0 right-0 z-[60] border-b border-gray-200 dark:border-gray-800 py-1 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400">
         <div class="mx-auto max-w-7xl px-4 flex justify-between items-center h-8">
             <div class="flex items-center gap-4">
                 <span
                     class="hidden sm:inline">{{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</span>
                 <span class="hidden sm:inline opacity-30">|</span>
-                <div class="flex items-center gap-1">
-                    <button id="theme-toggle" class="flex items-center gap-1 hover:text-brand-600 transition-colors"
+                <div class="flex items-center gap-3">
+                    <button id="theme-toggle"
+                        class="flex items-center justify-center w-6 h-6 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                         title="Cambiar tema">
                         <!-- Sun Icon -->
-                        <svg id="theme-toggle-light-icon" class="hidden w-4 h-4" fill="currentColor"
+                        <svg id="theme-toggle-light-icon" class="hidden w-4 h-4 text-yellow-500" fill="currentColor"
                             viewBox="0 0 20 20">
                             <path
                                 d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
                                 fill-rule="evenodd" clip-rule="evenodd"></path>
                         </svg>
                         <!-- Moon Icon -->
-                        <svg id="theme-toggle-dark-icon" class="hidden w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <svg id="theme-toggle-dark-icon" class="hidden w-4 h-4 text-brand-600" fill="currentColor"
+                            viewBox="0 0 20 20">
                             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                         </svg>
-                        <span class="sr-only">Tema</span>
                     </button>
+                    <span class="opacity-20">|</span>
                     <livewire:weather-widget />
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
                 @auth
-                    <div class="group relative">
-                        <button class="flex items-center gap-2 hover:text-brand-600">
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.away="open = false"
+                            class="flex items-center gap-2 hover:text-brand-600 transition-colors">
                             {{ auth()->user()->name }}
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3 h-3 transition-transform duration-200" :class="{ 'rotate-180': open }"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                                 </path>
                             </svg>
                         </button>
                         <!-- Dropdown -->
-                        <div
-                            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-sm shadow-xl border border-gray-100 dark:border-gray-700 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top-right">
+                        <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-sm shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-50 transform origin-top-right"
+                            style="display: none;">
 
                             <!-- Opción: MI PERFIL -->
                             <a href="{{ route('profile.edit') }}"
-                                class="block px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-brand-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white border-b border-gray-100 dark:border-gray-700 transition-colors">
+                                class="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-brand-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white border-b border-gray-100 dark:border-gray-700 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
                                 Mi Perfil
                             </a>
+
+                            <!-- Botón Modo Oscuro dentro del Dropdown -->
+                            <button onclick="document.getElementById('theme-toggle').click(); event.stopPropagation();"
+                                class="w-full flex items-center justify-between px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-brand-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white border-b border-gray-100 dark:border-gray-700 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-4 h-4 dark:hidden" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                                        </path>
+                                    </svg>
+                                    <svg class="w-4 h-4 hidden dark:block text-yellow-500" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 3v1m0 16v1m9-9h-1M4 9H3m3.343-5.657l-.707.707m12.728 12.728l-.707.707M6.343 17.657l-.707-.707M17.657 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                                        </path>
+                                    </svg>
+                                    Modo <span class="dark:hidden">Oscuro</span><span
+                                        class="hidden dark:inline">Claro</span>
+                                </div>
+                                <div class="w-8 h-4 bg-gray-200 dark:bg-gray-600 rounded-full relative">
+                                    <div class="absolute w-3 h-3 bg-white rounded-full top-0.5 transition-all duration-200"
+                                        :class="document.documentElement.classList.contains('dark') ? 'left-4' : 'left-0.5'">
+                                    </div>
+                                </div>
+                            </button>
 
                             <!-- Opción: Cerrar Sesión -->
                             <form action="{{ route('logout') }}" method="POST" class="block">
                                 @csrf
                                 <button type="submit"
-                                    class="w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 dark:text-gray-200 dark:hover:text-red-400 dark:hover:bg-gray-700 transition-colors">
+                                    class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 dark:text-gray-200 dark:hover:text-red-400 dark:hover:bg-gray-700 transition-colors">
+                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                        </path>
+                                    </svg>
                                     Cerrar Sesión
                                 </button>
                             </form>
@@ -97,6 +141,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Div espaciador para compensar el Top Bar fijo (Altura: 8 + padding ≈ 10/12) -->
+    <div class="h-10"></div>
 
     <!-- Header Principal -->
     @unless (request()->routeIs(['profile.edit', 'jobs.create', 'jobs.manage']))
@@ -166,27 +213,20 @@
                         Comprometidos con la verdad y el análisis profundo de los hechos que transforman nuestro mundo.
                     </p>
                 </div>
-                <!-- ... Sigue igual el footer ... -->
-                <div>
-                    <h4 class="font-bold text-sm uppercase tracking-wider mb-6 text-gray-500">Boletín</h4>
-                    <p class="text-xs text-gray-400 mb-4">Recibe lo más importante cada mañana.</p>
-                    <form class="flex gap-2">
-                        <input type="email" placeholder="Tu email"
-                            class="bg-gray-800 border-none text-white text-sm px-3 py-2 w-full focus:ring-1 focus:ring-brand-500 rounded-sm">
-                        <button
-                            class="bg-white text-black font-bold uppercase text-xs px-4 hover:bg-gray-200 rounded-sm transition-colors">OK</button>
-                    </form>
-                </div>
             </div>
-            <div class="border-t border-gray-800 pt-8 flex justify-between text-xs text-gray-500">
-                <p>&copy; {{ date('Y') }} Periodismo Digital S.L.</p>
+            <div
+                class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+                <p>&copy; {{ date('Y') }} ComercioGuajiro. Todos los derechos reservados.</p>
+                <p>Desarrollado por:  <a href="#"
+                        class="text-white hover:text-brand-600 transition-colors font-bold uppercase tracking-widest">Dainer
+                        Vargas</a></p>
             </div>
         </div>
     </footer>
 
     <!-- Botón Volver Arriba -->
     <button id="scroll-to-top"
-        class="fixed bottom-8 right-8 bg-black dark:bg-white text-white dark:text-black p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:-translate-y-1 z-50"
+        class="fixed bottom-14 right-8 bg-black dark:bg-white text-white dark:text-black p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:-translate-y-1 z-50"
         aria-label="Volver arriba">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18">
@@ -201,38 +241,35 @@
         const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
         const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 
-        function setIcons() {
-            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia(
-                    '(prefers-color-scheme: dark)').matches)) {
+        function updateThemeUI() {
+            const isDark = document.documentElement.classList.contains('dark');
+
+            // Actualizar iconos del botón principal
+            if (isDark) {
                 themeToggleLightIcon.classList.remove('hidden');
                 themeToggleDarkIcon.classList.add('hidden');
             } else {
                 themeToggleLightIcon.classList.add('hidden');
                 themeToggleDarkIcon.classList.remove('hidden');
             }
+
+            // Notificar cambios para otros componentes
+            window.dispatchEvent(new CustomEvent('dark-mode-updated', {
+                detail: {
+                    isDark
+                }
+            }));
         }
-        setIcons();
 
         themeToggleBtn.addEventListener('click', function() {
-            if (localStorage.getItem('theme')) {
-                if (localStorage.getItem('theme') === 'light') {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                }
-            } else {
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                }
-            }
-            setIcons();
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeUI();
         });
+
+        // Inicializar UI al cargar
+        updateThemeUI();
 
         // Scroll to Top Logic
         const scrollBtn = document.getElementById('scroll-to-top');

@@ -8,17 +8,46 @@
                     <p class="mt-2 text-base text-gray-500 dark:text-gray-400 font-medium">Control panel para vacantes y
                         postulaciones en tiempo real.</p>
                 </div>
-                <a href="{{ route('jobs.create') }}"
-                    class="inline-flex items-center px-6 py-4 border border-transparent rounded-2xl shadow-xl text-base font-black text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-500/50 transition-all transform hover:scale-105 active:scale-95">
-                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                    NUEVA VACANTE
-                </a>
+                @if (!$profileIncomplete)
+                    <a href="{{ route('jobs.create') }}"
+                        class="inline-flex items-center px-6 py-4 border border-transparent rounded-2xl shadow-xl text-base font-black text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-500/50 transition-all transform hover:scale-105 active:scale-95">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M12 4v16m8-8H4" />
+                        </svg>
+                        NUEVA VACANTE
+                    </a>
+                @endif
             </div>
         </div>
 
-        <!-- Success Message -->
+        <!-- Warning Incomplete Profile -->
+        @if ($profileIncomplete)
+            <div class="mb-8 p-6 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-2xl shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-amber-500 rounded-full p-2 mr-4">
+                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-amber-900 dark:text-amber-200 uppercase tracking-tight">
+                                Perfil de Empresa Incompleto</h3>
+                            <p class="text-sm font-medium text-amber-800/80 dark:text-amber-300/80">Debes completar la
+                                información de tu empresa antes de poder publicar nuevas vacantes.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('profile.edit', ['tab' => 'company']) }}"
+                        class="inline-flex items-center px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-amber-500/20">
+                        COMPLETAR PERFIL AHORA
+                    </a>
+                </div>
+            </div>
+        @endif
+
+        <!-- Success/Error Message -->
         @if (session('success'))
             <div class="mb-8 animate-in fade-in slide-in-from-top-4 duration-500">
                 <div
@@ -30,6 +59,22 @@
                     </div>
                     <p class="text-sm font-bold text-green-800 dark:text-green-200 uppercase tracking-wide">
                         {{ session('success') }}</p>
+                </div>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mb-8 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div
+                    class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-5 rounded-2xl shadow-sm flex items-center">
+                    <div class="flex-shrink-0 bg-red-500 rounded-full p-1 mr-4">
+                        <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <p class="text-sm font-bold text-red-800 dark:text-red-200 uppercase tracking-wide">
+                        {{ session('error') }}</p>
                 </div>
             </div>
         @endif
@@ -62,8 +107,10 @@
                             class="flex-1 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ $statusFilter === 'all' ? 'bg-white dark:bg-gray-800 text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">Todas</button>
                         <button wire:click="$set('statusFilter', 'active')"
                             class="flex-1 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ $statusFilter === 'active' ? 'bg-white dark:bg-gray-800 text-green-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">Activas</button>
+                        <button wire:click="$set('statusFilter', 'inactive')"
+                            class="flex-1 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ $statusFilter === 'inactive' ? 'bg-white dark:bg-gray-800 text-yellow-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">Inactivas</button>
                         <button wire:click="$set('statusFilter', 'closed')"
-                            class="flex-1 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ $statusFilter === 'closed' ? 'bg-white dark:bg-gray-800 text-yellow-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">Cerradas</button>
+                            class="flex-1 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ $statusFilter === 'closed' ? 'bg-white dark:bg-gray-800 text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">Cerradas</button>
                     </div>
                 </div>
             </div>
@@ -81,9 +128,15 @@
                                     <span
                                         class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm
                                         @if ($vacancy->status === 'active') bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400
-                                        @elseif($vacancy->status === 'closed') bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400
+                                        @elseif($vacancy->status === 'closed') bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400
                                         @else bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 @endif">
-                                        {{ $vacancy->status === 'active' ? 'Publicada' : 'Pausada' }}
+                                        @if ($vacancy->status === 'active')
+                                            Publicada
+                                        @elseif($vacancy->status === 'closed')
+                                            Cerrada
+                                        @else
+                                            Pausada
+                                        @endif
                                     </span>
                                     @if (auth()->user()->role === 'admin')
                                         <div
@@ -115,7 +168,7 @@
                                         <svg class="w-4 h-4 mr-2 text-orange-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>
                                         {{ $vacancy->applications->count() }} POSTULACIONES
                                     </div>
@@ -138,17 +191,21 @@
                                 </button>
 
                                 <div class="flex gap-2">
-                                    <button wire:click="toggleStatus({{ $vacancy->id }})"
-                                        class="p-4 bg-white dark:bg-gray-800 text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-400 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:shadow-lg"
-                                        title="{{ $vacancy->status === 'active' ? 'Pausar' : 'Activar' }}">
-                                        @if ($vacancy->status === 'active')
+                                    @if ($vacancy->status === 'active')
+                                        <button wire:click="setStatus({{ $vacancy->id }}, 'inactive')"
+                                            class="p-4 bg-white dark:bg-gray-800 text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-400 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:shadow-lg"
+                                            title="Pausar Vacante">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     stroke-width="2.5"
                                                     d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                        @else
+                                        </button>
+                                    @else
+                                        <button wire:click="setStatus({{ $vacancy->id }}, 'active')"
+                                            class="p-4 bg-white dark:bg-gray-800 text-gray-400 hover:text-green-600 dark:hover:text-green-400 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:shadow-lg"
+                                            title="Activar Vacante">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -157,8 +214,22 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                        @endif
-                                    </button>
+                                        </button>
+                                    @endif
+
+                                    @if ($vacancy->status !== 'closed')
+                                        <button wire:click="setStatus({{ $vacancy->id }}, 'closed')"
+                                            wire:confirm="¿Estás seguro de que deseas cerrar esta vacante? No aparecerá más en los listados públicos."
+                                            class="p-4 bg-white dark:bg-gray-800 text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:shadow-lg"
+                                            title="Cerrar Vacante">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="2.5"
+                                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                        </button>
+                                    @endif
 
                                     <button wire:click="deleteVacancy({{ $vacancy->id }})"
                                         wire:confirm="¿Estás completamente seguro de eliminar esta vacante? Esta acción es irreversible."
@@ -235,7 +306,7 @@
                                 <div class="lg:w-1/3 space-y-6">
                                     <div class="flex items-center gap-5">
                                         @if ($application->user->avatar)
-                                            <img src="{{ Storage::url($application->user->avatar) }}"
+                                            <img src="{{ asset($application->user->avatar) }}"
                                                 class="h-20 w-20 rounded-3xl object-cover shadow-lg border-2 border-white dark:border-gray-700"
                                                 alt="">
                                         @else

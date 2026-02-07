@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Article;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 
 class AuthorProfile extends Component
@@ -28,11 +29,11 @@ class AuthorProfile extends Component
 
     public function toggleFollow()
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        $user = auth()->user();
+        $user = Auth::user();
         $author = $this->author;
 
         if ($user->id === $author->id) {

@@ -166,7 +166,7 @@
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Cargo e
                                 Inmunidad</label>
                             <div class="flex gap-2">
-                                @foreach (['user' => 'Lector', 'editor' => 'Editor', 'admin' => 'Admin'] as $val => $label)
+                                @foreach (['user' => 'Lector', 'editor' => 'Editor', 'company' => 'Empresa', 'admin' => 'Admin'] as $val => $label)
                                     <button wire:click="$set('role', '{{ $val }}')"
                                         class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-sm border transition-all {{ $role === $val ? 'bg-black text-white border-black dark:bg-white dark:text-black' : 'bg-white text-gray-400 border-gray-100 dark:bg-gray-800 dark:border-gray-700' }}">
                                         {{ $label }}

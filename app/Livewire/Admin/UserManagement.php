@@ -18,7 +18,7 @@ class UserManagement extends Component
     public $userId, $name, $email;
     public $password, $password_confirmation;
     public $role = 'user', $permissions = [];
-    
+
     public $availablePermissions = [
         'manage_users' => 'Gestionar Usuarios',
         'manage_categories' => 'Gestionar Categorías',
@@ -76,7 +76,7 @@ class UserManagement extends Component
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . ($this->userId ?? 'NULL'),
-            'role' => 'required|in:admin,editor,user',
+            'role' => 'required|in:admin,editor,user,company',
             'permissions' => 'array'
         ];
 

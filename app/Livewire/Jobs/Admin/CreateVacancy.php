@@ -39,6 +39,16 @@ class CreateVacancy extends Component
         if (!Auth::check() || !Auth::user()->isCompany()) {
             abort(403, 'No autorizado');
         }
+
+        $profile = Auth::user()->companyProfile;
+
+        // Si no es admin, debe tener perfil de empresa completo
+        if (Auth::user()->role !== 'admin') {
+            if (!$profile || !$profile->company_name || !$profile->description || !$profile->location) {
+                session()->flash('error', 'Debes completar tu Perfil de Empresa antes de publicar una vacante.');
+                return redirect()->route('profile.edit', ['tab' => 'company']);
+            }
+        }
     }
 
     public function save()
@@ -46,7 +56,7 @@ class CreateVacancy extends Component
         $this->validate();
 
         try {
-            JobVacancy::create([
+            $vacancy = JobVacancy::create([
                 'user_id' => Auth::id(),
                 'job_category_id' => $this->job_category_id,
                 'title' => $this->title,
@@ -59,6 +69,9 @@ class CreateVacancy extends Component
                 'status' => $this->status,
                 'expires_at' => $this->expires_at,
             ]);
+
+            // Registrar en auditoría
+            \App\Models\AuditLog::log('create', $vacancy, "Creó la vacante: {$this->title}");
 
             session()->flash('success', '¡Vacante creada exitosamente!');
 
