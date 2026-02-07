@@ -23,8 +23,28 @@
         }
     </script>
 
+    <!-- PWA -->
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/android-chrome-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="ComercioGuajiro">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then((registration) => {
+                    console.log('SW registered:', registration);
+                }).catch((error) => {
+                    console.log('SW registration failed:', error);
+                });
+            });
+        }
+    </script>
 </head>
 
 <body class="flex min-h-full flex-col text-ink bg-paper transition-colors duration-300">
@@ -217,7 +237,7 @@
             <div
                 class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
                 <p>&copy; {{ date('Y') }} ComercioGuajiro. Todos los derechos reservados.</p>
-                <p>Desarrollado por:  <a href="#"
+                <p>Desarrollado por: <a href="#"
                         class="text-white hover:text-brand-600 transition-colors font-bold uppercase tracking-widest">Dainer
                         Vargas</a></p>
             </div>
